@@ -22,7 +22,7 @@ def assert_shop(func):
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if request.shopify_session.site == request.args.get('shop'):
+        if request.shopify_session.url == request.args.get('shop'):
             return func(*args, **kwargs)
         else:
             current_app.shopify.logout()
@@ -44,9 +44,13 @@ def shopify_login_required(func):
     """
     @wraps(func)
     def decorated_view(*args, **kwargs):
-        shop_n_token = current_app.tokengetter_func()
+        shop_n_token = current_app.shopify.tokengetter_func()
         if not shop_n_token:
-            return redirect(current_app.shopify.login_view)
+            return redirect(url_for(
+                current_app.shopify.login_view,
+                shop=request.args.get('shop'),
+                next=request.url
+            ))
 
         with shopify.Session.temp(*shop_n_token):
             return func(*args, **kwargs)
