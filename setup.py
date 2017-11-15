@@ -8,7 +8,7 @@ from setuptools import setup
 
 setup(
     name='Flask-Shopify',
-    version='0.1',
+    version='0.2',
     url='https://github.com/fulfilio/flask-shopify',
     license='BSD',
     author='Fulfil.IO Inc.',
