@@ -9,7 +9,7 @@ from setuptools import setup
 setup(
     name='Flask-Shopify',
     version='0.1',
-    url='http://example.com/flask-sqlite3/',
+    url='https://github.com/fulfilio/flask-shopify',
     license='BSD',
     author='Fulfil.IO Inc.',
     author_email='hello@fulfil.io',
