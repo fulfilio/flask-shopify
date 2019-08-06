@@ -12,6 +12,13 @@ SHOPIFY_SHARED_SECRET   = Your app's shared secret key with Shopify.
 SHOPIFY_API_KEY         = Your app's API key.
 ```
 
+### Optional
+
+```
+SHOPIFY_SCOPES          = The default API scopes to request.
+SHOPIFY_API_VERSION     = The specific version of the Shopify API to use.
+```
+
 ## Example usage
 
 ### Setup the app
@@ -33,7 +40,7 @@ shopify = Shopify()
 # ...
 # when app is available
 
-shoify.init_app(app)
+shopify.init_app(app)
 ```
 
 ### Using `shopify_login_required` decorator

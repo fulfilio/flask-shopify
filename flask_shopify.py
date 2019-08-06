@@ -15,6 +15,9 @@ from flask import (
 import shopify
 
 
+DEFAULT_SHOPIFY_API_VERSION = '2019-04'
+
+
 def assert_shop(func):
     """
     Ensure that the shop in the session is the same as the shop in a landing
@@ -95,6 +98,10 @@ class Shopify(object):
             secret=app.config['SHOPIFY_SHARED_SECRET']
         )
         app.before_request(self.before_request)
+        self.api_version = app.config.get(
+            'SHOPIFY_API_VERSION',
+            DEFAULT_SHOPIFY_API_VERSION
+        )
 
     def before_request(self):
         """
@@ -106,7 +113,8 @@ class Shopify(object):
         ctx = _request_ctx_stack.top
         if shop_token is not None:
             # should be a valid token
-            shop_session = shopify.Session(*shop_token)
+            domain, token = shop_token
+            shop_session = shopify.Session(domain, self.api_version, token)
             shopify.ShopifyResource.activate_session(shop_session)
             ctx.request.shopify_session = shop_session
         else:
@@ -123,14 +131,17 @@ class Shopify(object):
         """
         if scopes is None:
             scopes = self.app.config.get('SHOPIFY_SCOPES', [])
-        shop_session = shopify.Session("%s.myshopify.com" % shop_subdomain)
+        shop_session = shopify.Session(
+            "%s.myshopify.com" % shop_subdomain,
+            self.api_version
+        )
         permission_url = shop_session.create_permission_url(
             scopes, redirect_uri
         )
         return redirect(permission_url)
 
     def authenticate(self):
-        shop_session = shopify.Session(request.args['shop'])
+        shop_session = shopify.Session(request.args['shop'], self.api_version)
         token = shop_session.request_token(request.args)
         shopify.ShopifyResource.activate_session(shop_session)
         self.tokensetter_func(request.args['shop'], token)
